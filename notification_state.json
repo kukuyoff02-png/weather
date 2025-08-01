@@ -1,8 +1,4 @@
 {
-    "notified_heat_dates": [
-        "2025-08-01"
-    ],
-    "notified_rain_events": [
-        "2025-08-01T17:00"
-    ]
+    "notified_heat_dates": [],
+    "notified_rain_events": []
 }
