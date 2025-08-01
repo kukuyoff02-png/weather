@@ -5,10 +5,8 @@ on:
     - cron: "0 */2 * * *" # Runs every 2 hours
   workflow_dispatch:
 
-# เพิ่มส่วนนี้เข้าไป ---v
 permissions:
   contents: write
-# ---^
 
 jobs:
   run-bot:
