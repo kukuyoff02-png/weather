@@ -2,8 +2,13 @@ name: LINE Weather Bot - In Buri
 
 on:
   schedule:
-    - cron: "0 */2 * * *" # Runs every 2 hours (at 00:00, 02:00, 04:00, etc.)
-  workflow_dispatch: # Allows manual triggering
+    - cron: "0 */2 * * *" # Runs every 2 hours
+  workflow_dispatch:
+
+# เพิ่มส่วนนี้เข้าไป ---v
+permissions:
+  contents: write
+# ---^
 
 jobs:
   run-bot:
