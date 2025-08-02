@@ -2,7 +2,7 @@ name: LINE Weather Bot - In Buri
 
 on:
   schedule:
-    - cron: "0 */2 * * *" # Runs every 2 hours
+    - cron: "0 0-16/2 * * *" # Runs every 2 hours from 7 AM to 11 PM (Thai Time)
   workflow_dispatch:
 
 permissions:
