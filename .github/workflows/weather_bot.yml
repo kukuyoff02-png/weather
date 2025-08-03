@@ -2,7 +2,7 @@ name: LINE Weather Bot - In Buri
 
 on:
   schedule:
-    - cron: "0 0-16/2 * * *" # Runs every 2 hours from 7 AM to 11 PM (Thai Time)
+    - cron: "0 0-16/2 * * *"   # ทุก 2 ชม. ตั้งแต่ 07:00–23:00 ICT (UTC+7)
   workflow_dispatch:
 
 permissions:
@@ -11,29 +11,27 @@ permissions:
 jobs:
   run-bot:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
 
-    - name: Install dependencies
-      run: pip install requests
+      - name: Install dependencies
+        run: pip install -r requirements.txt
 
-    - name: Run Weather Bot
-      env:
-        LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
-      run: python main.py
+      - name: Run Weather Bot
+        env:
+          LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
+        run: python main.py
 
-    - name: Commit and push notification state
-      run: |
-        git config --global user.name 'github-actions[bot]'
-        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add notification_state.json
-        # Commit only if there are changes
-        git diff --staged --quiet || git commit -m "Update notification state"
-        git push
+      - name: Commit and push notification state
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add notification_state.json
+          git diff --staged --quiet || git commit -m "Update notification state"
+          git push
