@@ -2,26 +2,36 @@ name: LINE Weather Bot - In Buri
 
 on:
   schedule:
-    - cron: "0 0-16/2 * * *"   # ทุก 2 ชม. ตั้งแต่ 07:00–23:00 ICT (UTC+7)
+    # รันเวลา 07:30 และ 17:30 ICT → เท่ากับ 00:30 และ 10:30 UTC
+    - cron: "30 0,10 * * *"
   workflow_dispatch:
 
 permissions:
   contents: write
 
+concurrency:
+  group: line-weather-in-buri
+  cancel-in-progress: true
+
 jobs:
   run-bot:
     runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Bangkok
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: "3.11"
+          cache: "pip"
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Run Weather Bot
         env:
@@ -29,9 +39,19 @@ jobs:
         run: python main.py
 
       - name: Commit and push notification state
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add notification_state.json
-          git diff --staged --quiet || git commit -m "Update notification state"
-          git push
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+
+          # ระบุไฟล์สถานะที่ main.py เขียนไว้จริง ๆ
+          git add data/state.json 2>/dev/null || true
+          git add .state 2>/dev/null || true
+
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: update notification state [skip ci]"
+            git push
+          else
+            echo "No state changes to commit."
